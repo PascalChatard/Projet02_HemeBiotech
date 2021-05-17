@@ -1,43 +1,67 @@
 package com.hemebiotech.analytics;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 public class AnalyticsCounter {
-	private static int headacheCount = 0;	// initialize to 0
-	private static int rashCount = 0;		// initialize to 0
-	private static int pupilCount = 0;		// initialize to 0
+	private static int headacheCount = 0;
+	private static int rashCount = 0;
+	private static int dialatedPupilCount = 0;
 	
+	/**
+	 * Trend analysis program, read a symptom's file, count the occurrences of three
+	 * symptom's type and write the result in a text file. This is the Alex's
+	 * version code correction. + manage file Exception.
+	 * 
+	 * @param args not used
+	 * @throws FileNotFoundException the symptom file does not exist or cannot be
+	 *                               found
+	 * @throws EOFException          end of file reached
+	 * @throws IOException           other i/o file operation errors
+	 */
 	public static void main(String args[]) throws Exception {
-		// first get input
+		// open data source file
 		BufferedReader reader = new BufferedReader (new FileReader("symptoms.txt"));
 		String line = reader.readLine();
+		// create file for results
+		FileWriter writer = new FileWriter("results.out");
 
-		int i = 0;	// set i to 0
-		int headCount = 0;	// counts headaches
-		while (line != null) {
-			i++;	// increment i
-			System.out.println("symptom from file: " + line);
-			if (line.equals("headache")) {
-				headCount++;
-				System.out.println("number of headaches: " + headCount);
-			}
-			else if (line.equals("rush")) {
-				rashCount++;
-			}
-			else if (line.contains("pupils")) {
-				pupilCount++;
+		try {
+			while (line != null) {
+				// traits only three symptoms...
+				System.out.println("symptom from file: " + line);
+				if (line.equals("headache")) {
+					headacheCount++;
+					System.out.println("number of headaches: " + headacheCount);
+				} else if (line.equals("rash")) {
+					rashCount++;
+				} else if (line.equals("dialated pupils")) {
+					dialatedPupilCount++;
+				}
+
+				line = reader.readLine(); // get next symptom
 			}
 
-			line = reader.readLine();	// get another symptom
+			// record count result
+			writer.write("headache: " + headacheCount + "\n");
+			writer.write("rash: " + rashCount + "\n");
+			writer.write("dialated pupils: " + dialatedPupilCount + "\n");
+
+		} catch (FileNotFoundException e) {
+			System.out.println("Attention le fichier des symptômes n'existe pas ou est introuvable!");
+		} catch (EOFException e) {
+			System.out.println("Fin de fichier atteinte");
+		} catch (IOException e) {
+			System.out.println("Problème de lecture/écriture de fichier" + e.getMessage());
+		} finally {
+			if (reader != null)
+				reader.close();
+			if (writer != null)
+				writer.close();
 		}
-		
-		// next generate output
-		FileWriter writer = new FileWriter ("result.out");
-		writer.write("headache: " + headacheCount + "\n");
-		writer.write("rash: " + rashCount + "\n");
-		writer.write("dialated pupils: " + pupilCount + "\n");
-		writer.close();
 	}
 }
