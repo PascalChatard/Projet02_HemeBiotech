@@ -5,8 +5,8 @@ import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Simple brute force implementation
@@ -26,33 +26,42 @@ public class ReadSymptomDataFromFile implements ISymptomReader {
 	}
 	
 	/**
-	 * @return a raw listing of all Symptoms obtained from a data source, duplicates
-	 *         are possible/probable
+	 * If no data is available, return an empty List
+	 * 
+	 * @return a ordered listing of all Symptoms/occurrences obtained from a data
+	 *         source, without duplicates element
+	 * @throws FileNotFoundException the symptom file does not exist or cannot be
+	 *                               found
+	 * @throws IOException           other i/o file operation errors
 	 */
-
 	@Override
-	public List<String> getSymptoms() throws IOException {
+	public Map<String, Integer> getSymptoms() throws IOException {
 
-		// symptom's list
-		List<String> symptomList = new ArrayList<String>();
+		// symptom/occurrences's list
+		Map<String, Integer> symptomList = new TreeMap<>();
 		
 		if (filepath != null) {
 
 			// open symptom's file
 			BufferedReader reader = new BufferedReader(new FileReader(filepath));
-			String line = reader.readLine();
+			String symptomLine = reader.readLine();
 
 			try {
 				
-				while (line != null) {
-					symptomList.add(line);
-					line = reader.readLine();
+				while (symptomLine != null) {
+					Integer valeur = symptomList.get(symptomLine);
+					if (valeur == null) // it's new symptom
+						symptomList.put(symptomLine, 1);
+					else {
+						valeur++;
+						symptomList.replace(symptomLine, valeur);
+					}
+					symptomLine = reader.readLine(); // get next symptom
 				}
-				reader.close();
-			} catch (FileNotFoundException e) {
-				System.out.println("Attention le fichier des symptômes est introuvable!");
+
 			} catch (EOFException e) {
 				System.out.println("Fin de fichier atteinte!");
+				e.printStackTrace();
 			} catch (IOException e) {
 				System.out.println("Problème sur le fichier des symptômes " + e.getMessage());
 				e.printStackTrace();
@@ -61,9 +70,6 @@ public class ReadSymptomDataFromFile implements ISymptomReader {
 					reader.close();
 			}
 		}
-		
 		return symptomList;
 	}
-
-
 }

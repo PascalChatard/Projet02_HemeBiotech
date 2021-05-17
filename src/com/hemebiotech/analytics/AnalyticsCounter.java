@@ -4,9 +4,7 @@ import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class AnalyticsCounter {
 	
@@ -25,11 +23,8 @@ public class AnalyticsCounter {
 
 		try {
 			// reading symptom's file and return symptom list with duplicate elements
-			ReadSymptomDataFromFile objSymptomFile = new ReadSymptomDataFromFile("symptoms.txt");
-			List<String> symptomList = objSymptomFile.getSymptoms();
-
-			// get symptom/number of occurrences pairs from symptom list
-			Map<String, Integer> symptomOccurrenceMap = getKeyValueList(symptomList);
+			ISymptomReader objSymptomFile = new ReadSymptomDataFromFile("symptoms.txt");
+			Map<String, Integer> symptomOccurrenceMap = objSymptomFile.getSymptoms();
 
 			// create file for results
 			writeResultsDataToFile(symptomOccurrenceMap);
@@ -47,28 +42,6 @@ public class AnalyticsCounter {
 
 	}
 
-	/**
-	 * Read the symptom list, that may contain many duplications, and generate a
-	 * ordered key/value list without duplicate element.
-	 * 
-	 * @param symptomList a full list of symptom with duplicate element
-	 * @return a key/value pairs list, symptom/number off occurrences
-	 */
-	private static Map<String, Integer> getKeyValueList(List<String> symptomList) {
-		Map<String, Integer> tmap = new TreeMap<>();
-
-		// treats all symptoms, removing of duplicates and counting of occurrences
-		for (String symptom : symptomList) {
-			Integer valeur = tmap.get(symptom);
-			if (valeur == null) // symptom absent de tmap
-				tmap.put(symptom, 1);
-			else {
-				valeur++;
-				tmap.replace(symptom, valeur);
-			}
-		}
-		return tmap;
-	}
 
 	/**
 	 * Create a result data file, record each symptom with number of occurrences
