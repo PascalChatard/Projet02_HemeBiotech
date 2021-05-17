@@ -1,6 +1,5 @@
 package com.hemebiotech.analytics;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -8,11 +7,11 @@ import java.util.Map;
  * is, the operation record a list of strings/values, that may not contain
  * duplicate element
  * 
- * The implementation record a ordered list Strings/Values in a file
+ * The implementation record a ordered list Strings/Values in a resource
  * 
  */
 
 public interface ISymptomOccurrenceWriter {
-	void recordData(Map<String, Integer> symptomOccurence) throws IOException;
+	void recordData(Map<String, Integer> symptomOccurence);
 
 }

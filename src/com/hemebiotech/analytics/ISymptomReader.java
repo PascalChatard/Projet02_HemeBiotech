@@ -1,22 +1,21 @@
 package com.hemebiotech.analytics;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
- * Anything that will read symptom data from a source
- * The important part is, the return value from the operation, which is a list of strings,
- * that may contain many duplications
+ * Anything that will read symptom data from a source The important part is, the
+ * return value from the operation, which is a list of strings/values, that may
+ * not contain duplicate element
  * 
- * The implementation does not need to order the list
+ * The implementation need to order the list
  * 
  */
 public interface ISymptomReader {
 	/**
-	 * If no data is available, return an empty List.
+	 * If no data is available, return an empty List
 	 * 
-	 * @return a raw listing of all Symptoms/occurrences obtained from a data
-	 *         source, without duplicates elements.
+	 * @return a listing of all Symptoms/Occurrence obtained from a data source, no
+	 *         duplicates are possible
 	 */
-	Map<String, Integer> getSymptoms() throws IOException;
+	Map<String, Integer> getSymptoms();
 }

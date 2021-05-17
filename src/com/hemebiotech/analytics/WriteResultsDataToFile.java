@@ -1,7 +1,10 @@
 package com.hemebiotech.analytics;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -28,23 +31,20 @@ public class WriteResultsDataToFile implements ISymptomOccurrenceWriter {
 	 * @param symptomOccurence a ordered symptom/occurrences list
 	 * @throws Exception
 	 */
-	public void recordData(Map<String, Integer> symptomOccurence) throws IOException {
+	public void recordData(Map<String, Integer> symptomOccurence) {
 
 		if (filePathName != null) {
 
 			// create file for results write
-			FileWriter writer = new FileWriter(filePathName);
-			try {
+			try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePathName), StandardCharsets.UTF_8)) {
 				// write count result
 				for (String symptom : symptomOccurence.keySet()) {
 					writer.write(symptom + " " + symptomOccurence.get(symptom) + "\n");
 				}
-
 			} catch (IOException e) {
-				System.out.println("Problème sur le fichier des résultats " + e.getMessage());
-			} finally {
-				if (writer != null)
-					writer.close();
+				System.out.println("Problème sur le fichier des résultats...!\n " + e.getMessage());
+				e.printStackTrace();
+
 			}
 		}
 
