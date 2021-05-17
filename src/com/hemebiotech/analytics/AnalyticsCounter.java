@@ -1,21 +1,19 @@
 package com.hemebiotech.analytics;
 
-import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class AnalyticsCounter {
-	private static int headacheCount = 0;
-	private static int rashCount = 0;
-	private static int dialatedPupilCount = 0;
 	
 	/**
 	 * Trend analysis program, read a symptom's file, count the occurrences of three
-	 * symptom's type and write the result in a text file. This is the Alex's
-	 * version code correction. + manage file Exception.
+	 * symptom's type and write the result in a text file. POO code version
+	 * continued .
 	 * 
 	 * @param args not used
 	 * @throws FileNotFoundException the symptom file does not exist or cannot be
@@ -23,43 +21,76 @@ public class AnalyticsCounter {
 	 * @throws EOFException          end of file reached
 	 * @throws IOException           other i/o file operation errors
 	 */
-	public static void main(String args[]) throws Exception {
-		// open data source file
-		BufferedReader reader = new BufferedReader (new FileReader("symptoms.txt"));
-		String line = reader.readLine();
-		// create file for results
-		FileWriter writer = new FileWriter("results.out");
+	public static void main(String args[]) {
 
 		try {
-			while (line != null) {
-				// traits only three symptoms...
-				System.out.println("symptom from file: " + line);
-				if (line.equals("headache")) {
-					headacheCount++;
-					System.out.println("number of headaches: " + headacheCount);
-				} else if (line.equals("rash")) {
-					rashCount++;
-				} else if (line.equals("dialated pupils")) {
-					dialatedPupilCount++;
-				}
+			// reading symptom's file and return symptom list with duplicate elements
+			ReadSymptomDataFromFile objSymptomFile = new ReadSymptomDataFromFile("symptoms.txt");
+			List<String> symptomList = objSymptomFile.getSymptoms();
 
-				line = reader.readLine(); // get next symptom
-			}
+			// get symptom/number of occurrences pairs from symptom list
+			Map<String, Integer> symptomOccurrenceMap = getKeyValueList(symptomList);
 
-			// record count result
-			writer.write("headache: " + headacheCount + "\n");
-			writer.write("rash: " + rashCount + "\n");
-			writer.write("dialated pupils: " + dialatedPupilCount + "\n");
+			// create file for results
+			writeResultsDataToFile(symptomOccurrenceMap);
 
 		} catch (FileNotFoundException e) {
-			System.out.println("Attention le fichier des symptômes n'existe pas ou est introuvable!");
+			System.out.println("Attention le fichier des symptômes est introuvable!");
+			e.printStackTrace();
 		} catch (EOFException e) {
-			System.out.println("Fin de fichier atteinte");
+			System.out.println("Fin de fichier atteinte!");
+			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Problème de lecture/écriture de fichier" + e.getMessage());
+			System.out.println("Problème sur le fichier des symptômes " + e.getMessage());
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Read the symptom list, that may contain many duplications, and generate a
+	 * ordered key/value list without duplicate element.
+	 * 
+	 * @param symptomList a full list of symptom with duplicate element
+	 * @return a key/value pairs list, symptom/number off occurrences
+	 */
+	private static Map<String, Integer> getKeyValueList(List<String> symptomList) {
+		Map<String, Integer> tmap = new TreeMap<>();
+
+		// treats all symptoms, removing of duplicates and counting of occurrences
+		for (String symptom : symptomList) {
+			Integer valeur = tmap.get(symptom);
+			if (valeur == null) // symptom absent de tmap
+				tmap.put(symptom, 1);
+			else {
+				valeur++;
+				tmap.replace(symptom, valeur);
+			}
+		}
+		return tmap;
+	}
+
+	/**
+	 * Create a result data file, record each symptom with number of occurrences
+	 * 
+	 * @param symptomOccurence symptom/occurrences ordered list
+	 * @throws IOException i/o file operation errors
+	 */
+	private static void writeResultsDataToFile(Map<String, Integer> symptomOccurence) throws IOException {
+
+		// create file for results
+		FileWriter writer = new FileWriter("results.out");
+		try {
+
+			// write count result
+			for (String symptom : symptomOccurence.keySet()) {
+				writer.write(symptom + " " + symptomOccurence.get(symptom) + "\n");
+			}
+
+		} catch (IOException e) {
+			System.out.println("Problème sur le fichier des des résultats :" + e.getMessage());
+			e.printStackTrace();
 		} finally {
-			if (reader != null)
-				reader.close();
 			if (writer != null)
 				writer.close();
 		}
