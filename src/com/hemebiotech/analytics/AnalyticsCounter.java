@@ -2,7 +2,6 @@ package com.hemebiotech.analytics;
 
 import java.io.EOFException;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
@@ -10,8 +9,7 @@ public class AnalyticsCounter {
 	
 	/**
 	 * Trend analysis program, read a symptom's file, count the occurrences of three
-	 * symptom's type and write the result in a text file. POO code version
-	 * continued .
+	 * symptom's type and write the result in a text file. POO code version.
 	 * 
 	 * @param args not used
 	 * @throws FileNotFoundException the symptom file does not exist or cannot be
@@ -27,7 +25,8 @@ public class AnalyticsCounter {
 			Map<String, Integer> symptomOccurrenceMap = objSymptomFile.getSymptoms();
 
 			// create file for results
-			writeResultsDataToFile(symptomOccurrenceMap);
+			WriteResultsDataToFile resultOutputFile = new WriteResultsDataToFile("results.out");
+			resultOutputFile.recordData(symptomOccurrenceMap);
 
 		} catch (FileNotFoundException e) {
 			System.out.println("Attention le fichier des symptômes est introuvable!");
@@ -42,30 +41,4 @@ public class AnalyticsCounter {
 
 	}
 
-
-	/**
-	 * Create a result data file, record each symptom with number of occurrences
-	 * 
-	 * @param symptomOccurence symptom/occurrences ordered list
-	 * @throws IOException i/o file operation errors
-	 */
-	private static void writeResultsDataToFile(Map<String, Integer> symptomOccurence) throws IOException {
-
-		// create file for results
-		FileWriter writer = new FileWriter("results.out");
-		try {
-
-			// write count result
-			for (String symptom : symptomOccurence.keySet()) {
-				writer.write(symptom + " " + symptomOccurence.get(symptom) + "\n");
-			}
-
-		} catch (IOException e) {
-			System.out.println("Problème sur le fichier des des résultats :" + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (writer != null)
-				writer.close();
-		}
-	}
 }
