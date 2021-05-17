@@ -25,8 +25,10 @@ public class AnalyticsCounter {
 			Map<String, Integer> symptomOccurrenceMap = objSymptomFile.getSymptoms();
 
 			// create file for results
-			WriteResultsDataToFile resultOutputFile = new WriteResultsDataToFile("results.out");
-			resultOutputFile.recordData(symptomOccurrenceMap);
+			ISymptomOccurrenceWriter objSymptomOccurrenceFile = new WriteResultsDataToFile("results.out");
+			objSymptomOccurrenceFile.recordData(symptomOccurrenceMap);
+
+			System.out.println("\n***********  Analyse du fichier des symptomes terminée!  ***********");
 
 		} catch (FileNotFoundException e) {
 			System.out.println("Attention le fichier des symptômes est introuvable!");

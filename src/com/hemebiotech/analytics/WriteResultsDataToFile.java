@@ -10,7 +10,7 @@ import java.util.Map;
  * @author Pascal Chatard
  * @param filePathName a full or partial path name to file
  */
-public class WriteResultsDataToFile {
+public class WriteResultsDataToFile implements ISymptomOccurrenceWriter {
 	private String filePathName;
 
 	/**
