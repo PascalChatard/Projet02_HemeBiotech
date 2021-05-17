@@ -2,7 +2,15 @@ package com.hemebiotech.analytics;
 
 import java.util.Map;
 
+/**
+ * Default main class : read symptom's file and writes statistic file
+ *
+ * @author Pascal Chatard
+ */
 public class AnalyticsCounter {
+
+	public final static String DEFAULT_INPUT_FILENAME = "symptoms.txt";
+	public final static String DEFAULT_OUTPUT_FILENAME = "results.out";
 	
 	/**
 	 * Trend analysis program, read a symptom's file, count the occurrences of three
@@ -12,17 +20,53 @@ public class AnalyticsCounter {
 	 * @param args not used
 	 */
 	public static void main(String args[]) {
+		String inputFilename = DEFAULT_INPUT_FILENAME;
+		String outputFilename = DEFAULT_OUTPUT_FILENAME;
 
-			// reading symptom's file and return symptom list with duplicate elements
-			ISymptomReader objSymptomFile = new ReadSymptomDataFromFile("symptoms.txt");
-			Map<String, Integer> symptomOccurrenceMap = objSymptomFile.getSymptoms();
+		if (args != null && args.length > 0) {
+			if (args.length == 1) {
+				// check valid fileName
+				if (isValidFileName(args[0])) {
+					inputFilename = args[0];
+				}
+			} else {
+				if (!isValidFileName(args[0])) {
+					inputFilename = args[0];
+				}
+				if (!isValidFileName(args[1])) {
+					outputFilename = args[1];
+				}
+			}
 
-			// create file for results
-			ISymptomOccurrenceWriter objSymptomOccurrenceFile = new WriteResultsDataToFile("results.out");
-			objSymptomOccurrenceFile.recordData(symptomOccurrenceMap);
+		}
 
-			System.out.println("\n***********  Analyse du fichier des symptomes terminée!  ***********");
+		// reading symptom's file and return symptom/occurrences list without duplicate
+		// elements
+		ISymptomReader objSymptomFile = new ReadSymptomDataFromFile(inputFilename);
+		Map<String, Integer> symptomOccurrenceMap = objSymptomFile.getSymptoms();
 
+		// create file for results
+		ISymptomOccurrenceWriter objSymptomOccurrenceFile = new WriteResultsDataToFile(outputFilename);
+		objSymptomOccurrenceFile.recordData(symptomOccurrenceMap);
+
+		System.out.println("\n***********  Analyse du fichier des symptomes terminée!  ***********");
+
+	}
+
+	/**
+	 * Valid fileName.
+	 * 
+	 * @param fileName the string to check;
+	 * @return true or false
+	 */
+	private static boolean isValidFileName(String fileName) {
+		if (fileName.isEmpty())
+			return false;
+		// check contains no space
+		if (fileName.trim() != fileName)
+			return false;
+
+		return fileName.matches("^[\\w,\\s-]+\\.[A-Za-z]{3}$");
 	}
 
 }

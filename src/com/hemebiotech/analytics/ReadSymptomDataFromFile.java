@@ -26,7 +26,7 @@ public class ReadSymptomDataFromFile implements ISymptomReader {
 	public ReadSymptomDataFromFile(String filepath) {
 		this.filepath = filepath;
 	}
-	
+
 	/**
 	 * If no data is available, return an empty List
 	 * 
@@ -41,34 +41,31 @@ public class ReadSymptomDataFromFile implements ISymptomReader {
 
 		// symptom/occurrences's list
 		Map<String, Integer> symptomList = new TreeMap<>();
-		
-		if (filepath != null) {
 
-			// open symptom's file
-			try (BufferedReader reader = Files.newBufferedReader(Paths.get(filepath), StandardCharsets.UTF_8)) {
-				
-				String symptomLine = reader.readLine();
-				while (symptomLine != null) {
-					Integer valeur = symptomList.get(symptomLine);
-					if (valeur == null) // it's new symptom
-						symptomList.put(symptomLine, 1);
-					else {
-						valeur++;
-						symptomList.replace(symptomLine, valeur);
-					}
-					symptomLine = reader.readLine(); // get next symptom
+		// open symptom's file
+		try (BufferedReader reader = Files.newBufferedReader(Paths.get(filepath), StandardCharsets.UTF_8)) {
+
+			String symptomLine = reader.readLine();
+			while (symptomLine != null) {
+				Integer valeur = symptomList.get(symptomLine);
+				if (valeur == null) // it's new symptom
+					symptomList.put(symptomLine, 1);
+				else {
+					valeur++;
+					symptomList.replace(symptomLine, valeur);
 				}
-
-			} catch (FileNotFoundException e) {
-				System.out.println("Attention le fichier des symptômes est introuvable!");
-				e.printStackTrace();
-			} catch (EOFException e) {
-				System.out.println("Fin de fichier atteinte!");
-				e.printStackTrace();
-			} catch (IOException e) {
-				System.out.println("Problème sur le fichier des symptômes " + e.getMessage());
-				e.printStackTrace();
+				symptomLine = reader.readLine(); // get next symptom
 			}
+
+		} catch (FileNotFoundException e) {
+			System.out.println("Attention le fichier des symptômes est introuvable!");
+			e.printStackTrace();
+		} catch (EOFException e) {
+			System.out.println("Fin de fichier atteinte!");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Problème sur le fichier des symptômes " + e.getMessage());
+			e.printStackTrace();
 		}
 		return symptomList;
 	}

@@ -33,19 +33,16 @@ public class WriteResultsDataToFile implements ISymptomOccurrenceWriter {
 	 */
 	public void recordData(Map<String, Integer> symptomOccurence) {
 
-		if (filePathName != null) {
-
-			// create file for results write
-			try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePathName), StandardCharsets.UTF_8)) {
-				// write count result
-				for (String symptom : symptomOccurence.keySet()) {
-					writer.write(symptom + " " + symptomOccurence.get(symptom) + "\n");
-				}
-			} catch (IOException e) {
-				System.out.println("Problème sur le fichier des résultats...!\n " + e.getMessage());
-				e.printStackTrace();
-
+		// create file for results write
+		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePathName), StandardCharsets.UTF_8)) {
+			// write count result
+			for (String symptom : symptomOccurence.keySet()) {
+				writer.write(symptom + " " + symptomOccurence.get(symptom) + "\n");
 			}
+		} catch (IOException e) {
+			System.out.println("Problème sur le fichier des résultats...!\n " + e.getMessage());
+			e.printStackTrace();
+
 		}
 
 	}
